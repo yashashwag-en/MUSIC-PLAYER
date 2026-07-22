@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuraSound — Modern Web Audio Player</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Ambient background glow effect -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Main Container -->
+  <main class="player-container">
+    
+    <!-- Left Panel: Player Interface -->
+    <section class="player-card">
+      <header class="player-header">
+        <div class="brand">
+          <svg class="icon-logo" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+          <span>AuraSound</span>
+        </div>
+        <div class="badge-live" id="live-badge">
+          <span class="dot"></span> Playing
+        </div>
+      </header>
+
+      <!-- Album Cover Section with Rotating Disk -->
+      <div class="artwork-wrapper">
+        <div class="artwork-disk" id="artwork-disk">
+          <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600&auto=format&fit=crop&q=80" alt="Album Cover" id="album-cover" />
+          <div class="disk-center"></div>
+        </div>
+        
+        <!-- Animated Music Equalizer Overlay -->
+        <div class="visualizer" id="visualizer">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+
+      <!-- Track Info -->
+      <div class="track-info">
+        <h2 class="track-title" id="track-title">Loading Track...</h2>
+        <p class="track-artist" id="track-artist">Please wait</p>
+      </div>
+
+      <!-- Scrubber / Progress Bar -->
+      <div class="progress-container">
+        <div class="time-display">
+          <span id="current-time">0:00</span>
+          <span id="total-duration">0:00</span>
+        </div>
+        <div class="progress-bar-wrapper" id="progress-wrapper">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+            <div class="progress-thumb" id="progress-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Controls -->
+      <div class="controls-wrapper">
+        <!-- Modes -->
+        <div class="mode-controls">
+          <button class="btn-icon" id="btn-shuffle" title="Toggle Shuffle (S)">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.45 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+            </svg>
+          </button>
+          <button class="btn-icon" id="btn-repeat" title="Toggle Repeat (R)">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Main Buttons -->
+        <div class="main-controls">
+          <button class="btn-icon btn-secondary" id="btn-prev" title="Previous Track (Left Arrow)">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+            </svg>
+          </button>
+
+          <button class="btn-primary" id="btn-play" title="Play/Pause (Spacebar)">
+            <svg class="icon-play" viewBox="0 0 24 24" width="28" height="28">
+              <path fill="currentColor" d="M8 5v14l11-7z"/>
+            </svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" width="28" height="28" style="display: none;">
+              <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+          </button>
+
+          <button class="btn-icon btn-secondary" id="btn-next" title="Next Track (Right Arrow)">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path fill="currentColor" d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Volume Controller -->
+        <div class="volume-container">
+          <button class="btn-icon" id="btn-mute" title="Mute/Unmute (M)">
+            <svg class="icon-volume-high" viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg class="icon-volume-mute" viewBox="0 0 24 24" width="20" height="20" style="display: none;">
+              <path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+          </button>
+          <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8" title="Volume Slider (Up/Down Arrow)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: Playlist Navigation -->
+    <section class="playlist-card">
+      <div class="playlist-header">
+        <h3>Queue</h3>
+        <span class="playlist-count" id="playlist-count">0 Songs</span>
+      </div>
+      <ul class="playlist-list" id="playlist-list">
+        <!-- Rendered dynamically via JavaScript -->
+      </ul>
+      <div class="shortcuts-hint">
+        <span>💡 <b>Shortcuts:</b> Space (Play/Pause) | ← → (Track) | ↑ ↓ (Volume)</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Audio Element -->
+  <audio id="audio-player" preload="metadata"></audio>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span id="toast-message">Now playing song</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
